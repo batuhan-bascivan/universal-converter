@@ -1,4 +1,3 @@
-"use client";
 
 import React, { useState, useCallback } from "react";
 import { UploadCloud } from "lucide-react";
@@ -53,18 +52,27 @@ const DragDropArea: React.FC<DragDropAreaProps> = ({ onFilesAdded, acceptedFileT
   }, [onFilesAdded, acceptedFileTypes]);
 
   const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = Array.from(e.target.files || []).filter(file =>
-      acceptedFileTypes.split(',').some(type => {
+    const selectedFiles = Array.from(e.target.files || []).filter(file => {
+      return acceptedFileTypes.split(',').some(type => {
         const trimmedType = type.trim();
+        // Match wildcard MIME types like "image/*"
         if (trimmedType.endsWith('/*')) {
           return file.type.startsWith(trimmedType.slice(0, -1));
         }
-        return file.type === trimmedType;
-      })
-    );
+        // Match exact MIME type
+        if (file.type && file.type === trimmedType) return true;
+        // Match by extension (e.g. ".docx", ".doc") for files with missing/empty MIME type
+        if (trimmedType.startsWith('.')) {
+          return file.name.toLowerCase().endsWith(trimmedType.toLowerCase());
+        }
+        return false;
+      });
+    });
     if (selectedFiles.length > 0) {
       onFilesAdded(selectedFiles);
     }
+    // Reset input so the same file(s) can be selected again
+    e.target.value = '';
   }, [onFilesAdded, acceptedFileTypes]);
 
   return (

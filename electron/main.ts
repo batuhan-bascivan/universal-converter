@@ -65,22 +65,28 @@ ipcMain.handle('convert-file', async (event, filePath, format, outputDir) => {
         const outputPath = path.join(finalOutputDir, `${fileName}.${format}`);
 
 
-        const imageFormats = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'tiff', 'avif', 'bmp'];
+        const imageFormats = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'tiff', 'avif', 'bmp', 'ico'];
         const videoFormats = ['mp4', 'mov', 'avi', 'mkv', 'webm', 'flv', 'wmv'];
         const audioFormats = ['mp3', 'wav', 'aac', 'ogg', 'flac', 'm4a', 'wma'];
-        const ffmpegFormats = ['ico'];
 
         if (imageFormats.includes(format.toLowerCase())) {
-            await sharp(filePath).toFormat(format as any).toFile(outputPath);
-        } else if (videoFormats.includes(format.toLowerCase()) || audioFormats.includes(format.toLowerCase()) || ffmpegFormats.includes(format.toLowerCase())) {
+            // Sharp handles 'ico' differently - use ffmpeg as fallback
+            if (format.toLowerCase() === 'ico') {
+                await new Promise((resolve, reject) => {
+                    ffmpeg(filePath)
+                        .toFormat('ico')
+                        .size('256x256')
+                        .on('end', resolve)
+                        .on('error', reject)
+                        .save(outputPath);
+                });
+            } else {
+                await sharp(filePath).toFormat(format as any).toFile(outputPath);
+            }
+        } else if (videoFormats.includes(format.toLowerCase()) || audioFormats.includes(format.toLowerCase())) {
             await new Promise((resolve, reject) => {
-                let command = ffmpeg(filePath).toFormat(format);
-
-                if (format.toLowerCase() === 'ico') {
-                    command = command.size('256x256');
-                }
-
-                command
+                ffmpeg(filePath)
+                    .toFormat(format)
                     .on('end', resolve)
                     .on('error', reject)
                     .save(outputPath);
@@ -208,9 +214,6 @@ ipcMain.handle('convert-file', async (event, filePath, format, outputDir) => {
                 throw new Error(`Conversion to ${format} not yet supported locally.`);
             }
         }
-
-
-        shell.showItemInFolder(outputPath);
 
         return { success: true, path: outputPath };
 

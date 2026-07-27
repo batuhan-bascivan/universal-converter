@@ -4,80 +4,81 @@
   <img src="public/logo.png" alt="Universal Converter Logo" width="128" height="128">
 </p>
 
-A desktop application for local file conversion across various formats including images, video, audio, and documents.
+A privacy-first desktop application for local file conversion. Convert images, videos, audio, and documents — entirely offline.
 
-## Description
+## Features
 
-Universal Converter provides a streamlined interface for converting files directly on your local machine. By leveraging Electron, FFmpeg, and Sharp, the application ensures that no data leaves your computer during the conversion process, prioritizing privacy and performance.
+- **100% Offline** — All conversions happen locally, no data ever leaves your machine
+- **Multi-format Support** — Images, video, audio, and document conversion
+- **Batch Conversion** — Convert multiple files at once
+- **Custom Output Directory** — Choose where your converted files are saved
+- **Dark/Light Theme** — Toggle between themes
 
-### Key Features
+## Supported Formats
 
-*   **Offline Processing:** All conversions are performed locally.
-*   **Broad Format Support:** Handles common and professional file formats for images, audio, video, and documents.
-*   **Customizable Output:** Users can specify destination directories for converted files.
-*   **Cross-Platform:** Built using Electron for compatibility across multiple operating systems.
-*   **Modern Interface:** Built with React and Tailwind CSS for a responsive user experience.
+| Category | Formats |
+|----------|---------|
+| **Image** | JPG, PNG, WEBP, GIF, BMP, TIFF, ICO, PDF |
+| **Video** | MP4, MOV, AVI, MKV, WEBM, FLV, WMV |
+| **Audio** | MP3, WAV, AAC, OGG, FLAC, M4A, WMA |
+| **Document** | PDF, DOCX, TXT, HTML, ODT |
 
 ## Prerequisites
 
-Ensure you have the following installed:
-
-*   **Node.js** (version 18 or higher)
-*   **npm** (usually bundled with Node.js)
+- **Node.js** 18+
+- **npm** (bundled with Node.js)
 
 ## Getting Started
 
 ### Installation
 
-1.  Clone the repository:
-    ```bash
-    git clone https://github.com/zekobinks/universal-converter.git
-    ```
-2.  Navigate to the project directory:
-    ```bash
-    cd universal-converter
-    ```
-3.  Install dependencies:
-    ```bash
-    npm install
-    ```
+```bash
+git clone https://github.com/your-username/universal-converter.git
+cd universal-converter
+npm install
+```
 
 ### Development
-
-To start the application in development mode:
 
 ```bash
 npm run electron:dev
 ```
 
-### Production Build
-
-To build the application for Windows:
+### Build for Windows
 
 ```bash
 npm run electron:build
 ```
 
-## Supported Formats
+The installer and portable executable will be generated in the `release/` directory.
 
-### Images
-JPG, PNG, WEBP, GIF, BMP, TIFF, ICO, PDF
+## Tech Stack
 
-### Video
-MP4, MOV, AVI, MKV, WEBM, FLV, WMV
+| Technology | Purpose |
+|------------|---------|
+| **Electron** | Desktop application framework |
+| **React** | User interface |
+| **TypeScript** | Type safety |
+| **Tailwind CSS** | Styling |
+| **shadcn/ui** | UI components |
+| **FFmpeg** | Video/audio conversion |
+| **Sharp** | Image processing |
+| **Mammoth** | DOCX parsing |
 
-### Audio
-MP3, WAV, AAC, OGG, FLAC, M4A, WMA
+## Project Structure
 
-### Documents
-PDF, DOCX, TXT, HTML, ODT
+```
+├── electron/          # Electron main process & preload
+│   ├── main.ts        # Main process with conversion logic
+│   └── preload.ts     # Bridge between main & renderer
+├── src/               # React renderer process
+│   ├── components/    # UI components
+│   ├── pages/         # Application pages
+│   └── App.tsx        # Root component
+├── public/            # Static assets
+└── build/             # Build resources (icons)
+```
 
-## Technical Stack
+## License
 
-*   **Electron** - Framework for cross-platform desktop applications.
-*   **React** - UI library for building the user interface.
-*   **TypeScript** - Strongly typed programming language.
-*   **Tailwind CSS** - Utility-first CSS framework.
-*   **Shadcn/ui** - Component library for UI elements.
-*   **FFmpeg** - Multimedia framework for media conversion.
-*   **Sharp** - High-performance Node.js image processing library.
+MIT

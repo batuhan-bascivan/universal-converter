@@ -1,4 +1,3 @@
-"use client";
 
 import React, { useState, useCallback } from "react";
 import { FolderOpen } from "lucide-react";
@@ -184,67 +183,61 @@ const Index = () => {
     };
 
     try {
-
       updateFileState(prev => prev.map(f => f.id === fileToConvert.id ? { ...f, status: 'converting', progress: 10 } : f));
-
 
       if (!window.electron) {
         throw new Error("Electron API not available. Preload script failed to load.");
       }
       const filePath = window.electron.getFilePath(fileToConvert.file);
-      if (!filePath) throw new Error("File path not found. Are you running in Electron?");
+      if (!filePath) throw new Error("Could not get file path. Make sure you are running in Electron.");
 
       const result = await window.electron.convertFile(filePath, fileToConvert.outputFormat, destinationFolder || undefined);
 
       if (!result.success) throw new Error(result.error || "Conversion failed");
 
-
-      return { ...fileToConvert, status: 'completed', progress: 100, outputUrl: result.path };
+      const completed: FileToConvert = { ...fileToConvert, status: 'completed', progress: 100, outputUrl: result.path };
+      updateFileState(prev => prev.map(f => f.id === fileToConvert.id ? completed : f));
+      return completed;
 
     } catch (error: any) {
       console.error('Conversion failed:', error);
       toast.error(`Failed to convert ${fileToConvert.name}: ${error.message}`);
+      const failed: FileToConvert = { ...fileToConvert, status: 'failed', progress: 0 };
+      updateFileState(prev => prev.map(f => f.id === fileToConvert.id ? failed : f));
+      return failed;
     }
   }, [destinationFolder]);
 
   const handleConvertAll = useCallback(async (mediaType: 'image' | 'video' | 'audio' | 'document') => {
     const toastId = toast.loading(`Starting ${mediaType} conversion...`);
     let filesToProcess: FileToConvert[] = [];
-    let setFilesState: React.Dispatch<React.SetStateAction<FileToConvert[]>>;
 
     if (mediaType === 'image') {
       filesToProcess = imageFiles;
-      setFilesState = setImageFiles;
     } else if (mediaType === 'video') {
       filesToProcess = videoFiles;
-      setFilesState = setVideoFiles;
     } else if (mediaType === 'audio') {
       filesToProcess = audioFiles;
-      setFilesState = setAudioFiles;
     } else {
       filesToProcess = documentFiles;
-      setFilesState = setDocumentFiles;
     }
 
     const pendingFiles = filesToProcess.filter(f => f.status === 'pending' || f.status === 'failed');
+    if (pendingFiles.length === 0) {
+      toast.dismiss(toastId);
+      toast.info('No files to convert.');
+      return;
+    }
 
-    const conversionPromises = pendingFiles.map(file => convertFile(file));
-
-    const results = await Promise.all(conversionPromises);
-
-    setFilesState(prevFiles =>
-      prevFiles.map(oldFile => {
-        const newFile = results.find(res => res.id === oldFile.id);
-        return newFile || oldFile;
-      })
-    );
+    // convertFile already updates state individually; just wait for all to finish
+    const results = await Promise.all(pendingFiles.map(file => convertFile(file)));
 
     toast.dismiss(toastId);
     const failedCount = results.filter(r => r.status === 'failed').length;
     if (failedCount > 0) {
       toast.error(`${failedCount} ${mediaType} conversion(s) failed.`);
     } else {
-      toast.success(`${mediaType} conversions finished!`);
+      toast.success(`All ${mediaType} conversions finished!`);
     }
   }, [imageFiles, videoFiles, audioFiles, documentFiles, convertFile]);
 
@@ -345,7 +338,7 @@ const Index = () => {
       <div className="w-full max-w-5xl mx-auto flex flex-col gap-8">
         <header className="text-center">
           <h1 className="text-4xl sm:text-5xl font-bold text-foreground mb-2">
-            Universal Converter 🚀
+            Universal Converter
           </h1>
           <p className="text-lg text-muted-foreground">
             Drag, drop, select format, and convert. It's that simple.
