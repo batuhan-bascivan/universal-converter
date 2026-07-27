@@ -33,7 +33,7 @@ A privacy-first desktop application for local file conversion. Convert images, v
 ### Installation
 
 ```bash
-git clone https://github.com/your-username/universal-converter.git
+git clone https://github.com/batuhan-bascivan/universal-converter.git
 cd universal-converter
 npm install
 ```
@@ -64,21 +64,3 @@ The installer and portable executable will be generated in the `release/` direct
 | **FFmpeg** | Video/audio conversion |
 | **Sharp** | Image processing |
 | **Mammoth** | DOCX parsing |
-
-## Project Structure
-
-```
-├── electron/          # Electron main process & preload
-│   ├── main.ts        # Main process with conversion logic
-│   └── preload.ts     # Bridge between main & renderer
-├── src/               # React renderer process
-│   ├── components/    # UI components
-│   ├── pages/         # Application pages
-│   └── App.tsx        # Root component
-├── public/            # Static assets
-└── build/             # Build resources (icons)
-```
-
-## License
-
-MIT
