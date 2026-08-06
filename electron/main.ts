@@ -18,7 +18,6 @@ function createWindow() {
     const mainWindow = new BrowserWindow({
         width: 1000,
         height: 800,
-        icon: path.join(__dirname, isDev ? '../public/favicon.ico' : '../dist/favicon.ico'),
         autoHideMenuBar: true,
         webPreferences: {
             preload: preloadPath,

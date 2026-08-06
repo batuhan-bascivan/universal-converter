@@ -1,8 +1,5 @@
 # Universal Converter
 
-<p align="center">
-  <img src="public/logo.png" alt="Universal Converter Logo" width="128" height="128">
-</p>
 
 A privacy-first desktop application for local file conversion. Convert images, videos, audio, and documents — entirely offline.
 
